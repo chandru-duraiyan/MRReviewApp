@@ -1523,6 +1523,74 @@ input.field-empty:focus {
 }
 .er-ask-copy-btn:hover { opacity: 0.85; }
 
+.er-ask-json-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.er-ask-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+  flex-shrink: 0;
+}
+.er-ask-info-btn:hover,
+.er-ask-info-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.er-json-info-panel {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 270px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  padding: 12px 14px;
+  z-index: 50;
+}
+.er-json-info-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.er-json-info-steps {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+.er-json-info-steps li { margin-bottom: 4px; }
+.er-json-info-steps li:last-child { margin-bottom: 0; }
+.er-json-info-steps strong { color: var(--text); font-weight: 600; }
+.er-json-info-steps code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.74rem;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 0 4px;
+  color: var(--accent);
+}
+
 .er-ask-cliq-btn {
   display: inline-flex;
   align-items: center;

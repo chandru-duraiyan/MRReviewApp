@@ -1036,6 +1036,8 @@ function initErAskPanel() {
   const copyLabel      = $('erAskCopyLabel');
   const copyJsonBtn    = $('erAskCopyJsonBtn');
   const copyJsonLabel  = $('erAskCopyJsonLabel');
+  const jsonInfoBtn    = $('erJsonInfoBtn');
+  const jsonInfoPanel  = $('erJsonInfoPanel');
   const flavours       = $('erAskFlavours');
   const salutEl        = $('erAskSalutations');
 
@@ -1147,6 +1149,21 @@ function initErAskPanel() {
       copyLabel.textContent = 'Copied!';
       setTimeout(() => { copyLabel.textContent = 'Copy message'; }, 2000);
     });
+  });
+
+  function closeJsonInfo() {
+    jsonInfoPanel.classList.add('hidden');
+    jsonInfoBtn.classList.remove('active');
+  }
+
+  jsonInfoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !jsonInfoPanel.classList.contains('hidden');
+    isOpen ? closeJsonInfo() : (jsonInfoPanel.classList.remove('hidden'), jsonInfoBtn.classList.add('active'));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!jsonInfoPanel.contains(e.target) && e.target !== jsonInfoBtn) closeJsonInfo();
   });
 
   // Returns only the text-node content of the bubble, omitting the MR link anchor.
