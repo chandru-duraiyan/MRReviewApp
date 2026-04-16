@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MR Review</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><path d="M14 2L3 10.5L6.5 24H21.5L25 10.5L14 2Z" fill="%23FC6D26" opacity="0.9"/><path d="M14 2L6.5 24H21.5L14 2Z" fill="%23E24329"/><path d="M3 10.5L6.5 24L14 2L3 10.5Z" fill="%23FC6D26"/><path d="M25 10.5L21.5 24L14 2L25 10.5Z" fill="%23FCA326"/></svg>'>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2L3 10.5L6.5 24H21.5L25 10.5L14 2Z" fill="#FC6D26" opacity="0.9" />
+          <path d="M14 2L6.5 24H21.5L14 2Z" fill="#E24329" />
+          <path d="M3 10.5L6.5 24L14 2L3 10.5Z" fill="#FC6D26" />
+          <path d="M25 10.5L21.5 24L14 2L25 10.5Z" fill="#FCA326" />
+        </svg>
+        <span>MR Review</span>
+      </div>
+
+      <div class="header-actions">
+        <!-- How to Use -->
+        <div class="header-panel-wrap">
+          <button class="icon-btn" id="howToUseBtn" title="How to use" aria-label="How to use this app">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+
+          <div class="header-dropdown how-to-panel hidden" id="howToPanel">
+            <div class="header-dropdown-header">
+              <span class="header-dropdown-title">How to Use</span>
+              <button class="close-btn" id="closeHowToPanel" aria-label="Close">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div class="htu-body">
+
+              <div class="htu-section">
+                <div class="htu-step">
+                  <span class="htu-step-num">1</span>
+                  <div>
+                    <div class="htu-step-title">Configure Settings</div>
+                    <p class="htu-step-desc">Click the gear icon and fill in your <strong>GitLab Instance URL</strong>,
+                      <strong>Project Path</strong> (e.g. <code>namespace/project</code>), and a <strong>Personal Access
+                        Token</strong> with <code>read_api</code> scope. All three fields are required.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">2</span>
+                  <div>
+                    <div class="htu-step-title">Enter MR ID &amp; Fetch</div>
+                    <p class="htu-step-desc">Type the Merge Request ID (the number after <code>!</code>) and press
+                      <strong>Fetch</strong> or hit Enter.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">3</span>
+                  <div>
+                    <div class="htu-step-title">Auto-trigger Review Assignment</div>
+                    <p class="htu-step-desc">If the latest comment doesn't contain reviewer details, the app
+                      automatically posts <code>@gunther pendingreview</code> and waits 12 seconds for the bot to
+                      generate the assignment, then re-fetches.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">4</span>
+                  <div>
+                    <div class="htu-step-title">Already Reviewed</div>
+                    <p class="htu-step-desc">Reviewers who gave a 👍 reaction directly on the MR appear here. They are
+                      automatically excluded from the Enough Reviewers calculation.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">5</span>
+                  <div>
+                    <div class="htu-step-title">Enough Reviewers</div>
+                    <p class="htu-step-desc">The minimum set of reviewers needed to cover every pending file, computed
+                      using a greedy algorithm across primary and backup reviewers. Click <strong>✕</strong> on any chip
+                      to exclude that reviewer and recompute instantly.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">6</span>
+                  <div>
+                    <div class="htu-step-title">Removed from Consideration</div>
+                    <p class="htu-step-desc">Reviewers you exclude via <strong>✕</strong> appear in a separate
+                      <em>Removed from consideration</em> row below the chips. Click <strong>+</strong> next to any name
+                      to re-add them — the minimum reviewer list recomputes immediately. A reviewer cannot be removed if
+                      doing so would leave any file with no eligible reviewer.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">7</span>
+                  <div>
+                    <div class="htu-step-title">Ask for Review</div>
+                    <p class="htu-step-desc">Click the <strong>chat icon</strong> in the Enough Reviewers header to open
+                      the Ask for Review panel. It pre-fills a message — <em>Hi, Please review this [MR link]</em> — that
+                      you can <strong>Copy</strong> and share with reviewers. Use the <strong>Zoho Cliq</strong> icon
+                      beside the copy button to open Cliq directly.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">8</span>
+                  <div>
+                    <div class="htu-step-title">Review Comment</div>
+                    <p class="htu-step-desc">The latest comment is parsed into file sections — <strong>Needs
+                        Approval</strong> (orange), <strong>Backup Approved</strong> (yellow), and
+                      <strong>Approved</strong> (blue) — each listing its files with primary and backup reviewers.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="htu-tips">
+                <div class="htu-tips-title">Tips</div>
+                <ul>
+                  <li>Use the <strong>moon/sun</strong> button to toggle dark and light theme. Your preference is saved.</li>
+                  <li>Pick an <strong>accent colour</strong> from Settings → Accent Color to personalise the app's look.</li>
+                  <li>A <strong>red dot</strong> on the gear icon means a settings field is empty.</li>
+                  <li>Defaults can be changed in <code>config.js</code> without touching app logic.</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">
+          <!-- Moon (shown in dark mode) -->
+          <svg id="iconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+          <!-- Sun (shown in light mode) -->
+          <svg id="iconSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" style="display:none">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        </button>
+        <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Open settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span class="settings-alert-dot hidden" id="settingsAlertDot"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Settings Drawer -->
+    <div class="settings-overlay hidden" id="settingsOverlay"></div>
+    <aside class="settings-drawer hidden" id="settingsDrawer">
+      <div class="settings-drawer-header">
+        <h3>Settings</h3>
+        <button class="close-btn" id="closeSettings" aria-label="Close settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="settings-body">
+        <div class="form-group">
+          <label for="gitlabUrl"><span>GitLab Instance URL <span class="required-mark">*</span></span></label>
+          <input type="url" id="gitlabUrl" placeholder="https://gitlab.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="projectPath"><span>Project Path <span class="required-mark">*</span></span></label>
+          <input type="text" id="projectPath" placeholder="namespace/project" required />
+          <span class="hint">e.g. gitlab-org/gitlab</span>
+        </div>
+
+        <div class="form-group">
+          <label for="gitUsername"><span>GitLab Username <span class="required-mark">*</span></span></label>
+          <input type="text" id="gitUsername" placeholder="e.g. chandru.d" />
+          <span class="hint">Used to list your open MRs</span>
+        </div>
+
+        <div class="form-group">
+          <label for="accessToken">
+            <span>Access Token <span class="required-mark">*</span></span>
+            <a href="#" class="label-link" id="tokenHelp">How to get one?</a>
+          </label>
+          <div class="input-wrapper">
+            <input type="password" id="accessToken" placeholder="glpat-xxxxxxxxxxxxxxxxxxxx" required
+              autocomplete="off" />
+            <button type="button" class="toggle-visibility" id="toggleToken" title="Toggle visibility">
+              <svg id="eyeOpen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg id="eyeClosed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" style="display:none">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Token Help -->
+        <div class="info-panel hidden" id="tokenHelpPanel">
+          <div class="info-panel-header">
+            <h3>Creating a GitLab Access Token</h3>
+            <button class="close-btn" id="closeHelp">✕</button>
+          </div>
+          <ol>
+            <li>Go to your GitLab profile → <strong>Edit profile</strong> → <strong>Access tokens</strong></li>
+            <li>Click <strong>Add new token</strong></li>
+            <li>Give it a name, set an expiry, and select the <code>read_api</code> scope</li>
+            <li>Click <strong>Create personal access token</strong> and copy the token</li>
+          </ol>
+        </div>
+
+        <!-- Accent Color -->
+        <div class="theme-section">
+          <div class="theme-section-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+            </svg>
+            Accent Color
+          </div>
+          <div class="theme-swatches" id="themeSwatches"></div>
+        </div>
+
+      </div>
+    </aside>
+
+    <main>
+      <!-- Main fetch form — only MR ID -->
+      <section class="form-section">
+        <form id="mrForm" class="mr-id-form">
+          <div class="mr-id-row">
+            <div class="form-group mr-id-group">
+              <label for="mrIid">Merge Request ID</label>
+              <div class="mr-input-wrap">
+                <input type="number" id="mrIid" placeholder="e.g. 143850" min="1" required autofocus autocomplete="off" />
+                <div class="mr-dropdown hidden" id="mrDropdown">
+                  <div class="mr-dropdown-list" id="mrDropdownList"></div>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" id="submitBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              Fetch
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Loading State -->
+      <div class="loading hidden" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">
+          <p id="loadingMsg">Fetching MR data…</p>
+          <span id="loadingDetail" class="loading-detail hidden"></span>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div class="error-card hidden" id="errorCard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <div>
+          <strong id="errorTitle">Error</strong>
+          <p id="errorMessage"></p>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <section class="results hidden" id="results">
+
+        <!-- Already Reviewed -->
+        <div class="already-reviewed hidden" id="alreadyReviewed">
+          <div class="ar-header">
+            <div class="ar-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+                <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+              </svg>
+              Already Reviewed
+            </div>
+            <span class="ar-badge" id="arBadge">0 reviewed</span>
+          </div>
+          <div class="ar-body">
+            <p class="ar-desc">Reviewers who have approved this MR</p>
+            <div class="ar-chips" id="arChips"></div>
+          </div>
+        </div>
+
+        <!-- Enough Reviewers -->
+        <div class="enough-reviewers hidden" id="enoughReviewers">
+          <div class="er-header">
+            <div class="er-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              Enough Reviewers
+            </div>
+            <div class="er-header-actions">
+              <span class="er-badge" id="erBadge">0 needed</span>
+              <button class="er-ask-btn" id="erAskBtn" title="Ask reviewers to review">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <!-- Ask Review Panel -->
+          <div class="er-ask-panel hidden" id="erAskPanel">
+            <div class="er-ask-panel-header">
+              <span>Ask for Review</span>
+              <button class="close-btn" id="closeErAskPanel" aria-label="Close">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="er-ask-panel-body">
+              <div class="er-ask-section-label">Template</div>
+              <div class="er-ask-flavours" id="erAskFlavours"></div>
+              <div class="er-ask-section-label">Salutation</div>
+              <div class="er-ask-flavours" id="erAskSalutations"></div>
+              <div class="er-ask-bubble" id="erAskBubble" contenteditable="true" spellcheck="false"></div>
+              <div class="er-ask-actions">
+                <button class="er-ask-copy-btn" id="erAskCopyBtn">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <span id="erAskCopyLabel">Copy message</span>
+                </button>
+                <a class="er-ask-cliq-btn" href="https://cliq.zoho.in" target="_blank" rel="noopener noreferrer" title="Open Zoho Cliq">
+                  <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 26 10 H 74 Q 92 10 92 28 V 63 Q 92 80 74 80 H 57 L 50 95 L 43 80 H 26 Q 8 80 8 63 V 28 Q 8 10 26 10"
+                      stroke="#3a7bd5" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="34" cy="45" r="7" fill="#e53935"/>
+                    <circle cx="50" cy="45" r="7" fill="#e53935"/>
+                    <circle cx="66" cy="45" r="7" fill="#e53935"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="er-body">
+            <p class="er-desc">Minimum reviewers to cover all pending files</p>
+            <div class="er-chips" id="erChips"></div>
+            <div class="er-error hidden" id="erError"></div>
+            <div class="er-removed-section hidden" id="erRemovedSection">
+              <div class="er-removed-label">
+                Removed from consideration
+                <span class="er-removed-info" tabindex="0" aria-label="About removed reviewers">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <circle cx="12" cy="16" r="0.5" fill="currentColor"/>
+                  </svg>
+                  <span class="er-removed-tooltip">Reviewers you excluded by clicking ✕. The minimum list is recomputed without them. Click + to re-add and recompute.</span>
+                </span>
+              </div>
+              <div class="er-removed-chips" id="erRemovedChips"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-header">
+          <h2>Latest Comment</h2>
+          <a href="#" class="mr-link" id="mrLink" target="_blank" rel="noopener noreferrer">
+            View MR
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="comment-card" id="commentCard">
+          <div class="comment-header">
+            <img class="avatar" id="authorAvatar" src="" alt="" width="36" height="36" />
+            <div class="author-info">
+              <span class="author-name" id="authorName"></span>
+              <span class="comment-time" id="commentTime"></span>
+            </div>
+            <a href="#" class="comment-permalink" id="commentPermalink" target="_blank" rel="noopener noreferrer"
+              title="Open comment">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </a>
+          </div>
+
+          <div class="comment-body" id="commentBody"></div>
+
+          <div class="reactions-section" id="reactionsSection">
+            <div class="reactions-label">Reactions</div>
+            <div class="reactions-list" id="reactionsList"></div>
+          </div>
+
+          <div class="no-reactions hidden" id="noReactions">
+            <span>No reactions yet</span>
+          </div>
+        </div>
+
+        <div class="no-comments hidden" id="noComments">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <p>No comments on this merge request yet.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="ask-messages.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
