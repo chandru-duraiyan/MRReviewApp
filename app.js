@@ -1247,13 +1247,36 @@ function initMRDropdown() {
 // ─── Initialisation ───────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Apply defaults from config.js
+  // Apply defaults: config.js takes priority for accessToken and gitUsername;
+  // fall back to localStorage when config has no value.
   if (typeof CONFIG !== 'undefined') {
     if (CONFIG.gitlabUrl)   $('gitlabUrl').value   = CONFIG.gitlabUrl;
     if (CONFIG.projectPath) $('projectPath').value = CONFIG.projectPath;
-    if (CONFIG.accessToken) $('accessToken').value = CONFIG.accessToken;
-    if (CONFIG.gitUsername) $('gitUsername').value = CONFIG.gitUsername;
+
+    // Access token — config.js wins if set, otherwise restore from localStorage
+    const storedToken    = localStorage.getItem('mrreview-accessToken') || '';
+    const resolvedToken  = CONFIG.accessToken || storedToken;
+    if (resolvedToken) {
+      $('accessToken').value = resolvedToken;
+      if (CONFIG.accessToken) localStorage.setItem('mrreview-accessToken', CONFIG.accessToken);
+    }
+
+    // Git username — config.js wins if set, otherwise restore from localStorage
+    const storedUsername   = localStorage.getItem('mrreview-gitUsername') || '';
+    const resolvedUsername = CONFIG.gitUsername || storedUsername;
+    if (resolvedUsername) {
+      $('gitUsername').value = resolvedUsername;
+      if (CONFIG.gitUsername) localStorage.setItem('mrreview-gitUsername', CONFIG.gitUsername);
+    }
   }
+
+  // Persist accessToken and gitUsername edits to localStorage
+  $('accessToken').addEventListener('input', () => {
+    localStorage.setItem('mrreview-accessToken', $('accessToken').value.trim());
+  });
+  $('gitUsername').addEventListener('input', () => {
+    localStorage.setItem('mrreview-gitUsername', $('gitUsername').value.trim());
+  });
 
   // Settings alert dot — show when any settings field is empty
   function checkSettingsFields() {
