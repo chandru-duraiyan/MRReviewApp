@@ -648,7 +648,15 @@ function renderEnoughReviewers(reviewers) {
   // Keep card visible if there are removed reviewers to show
   if ((!reviewers || reviewers.length === 0) && _erState.excluded.size === 0) {
     hideElement('enoughReviewers');
+    hideElement('erAskNotifyDot');
     return;
+  }
+
+  // Show notification dot only when there are pending reviewers to ask
+  if (reviewers && reviewers.length > 0) {
+    showElement('erAskNotifyDot');
+  } else {
+    hideElement('erAskNotifyDot');
   }
 
   $('erBadge').textContent = reviewers && reviewers.length > 0
@@ -1127,6 +1135,7 @@ function initErAskPanel() {
     copyLabel.textContent = 'Copy message';
     showElement('erAskPanel');
     btn.classList.add('active');
+    hideElement('erAskNotifyDot');
   }
 
   function closePanel() {

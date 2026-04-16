@@ -1378,6 +1378,7 @@ input.field-empty:focus {
 }
 
 .er-ask-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1391,6 +1392,18 @@ input.field-empty:focus {
   cursor: pointer;
   transition: border-color var(--transition), color var(--transition), background var(--transition);
   flex-shrink: 0;
+}
+.er-ask-notify-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 1.5px solid var(--surface);
+  animation: alertBlink 1.2s ease-in-out infinite;
+  pointer-events: none;
 }
 .er-ask-btn:hover, .er-ask-btn.active {
   border-color: var(--accent);
