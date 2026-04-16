@@ -4,5 +4,5 @@ const CONFIG = {
   gitlabUrl:   'https://zbgit.csez.zohocorpin.com',
   projectPath: 'zohofinance/zohobooks_server',
   accessToken: '',
-  gitUsername: 'chandru.d',
+  gitUsername: '',
 };
