@@ -113,6 +113,22 @@
                 <div class="htu-step">
                   <span class="htu-step-num">8</span>
                   <div>
+                    <div class="htu-step-title">Copy JSON</div>
+                    <p class="htu-step-desc">Click <strong>Copy JSON</strong> in the Ask for Review panel to copy a
+                      structured JSON payload to your clipboard. The object contains:</p>
+                    <ul class="htu-step-list">
+                      <li><code>not_reviewed_by</code> — usernames of the <em>minimum reviewers</em> still needed
+                        (respects any reviewers you excluded via <strong>✕</strong>)</li>
+                      <li><code>message</code> — the review request text as currently shown in the message box
+                        (including any edits you made)</li>
+                      <li><code>mr_title</code> — the MR number and title (e.g. <code>MR !147082 — Fix …</code>)</li>
+                      <li><code>mr_link</code> — direct URL to the merge request</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">9</span>
+                  <div>
                     <div class="htu-step-title">Review Comment</div>
                     <p class="htu-step-desc">The latest comment is parsed into file sections — <strong>Needs
                         Approval</strong> (orange), <strong>Backup Approved</strong> (yellow), and
@@ -364,6 +380,15 @@
                     <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                   </svg>
                   <span id="erAskCopyLabel">Copy message</span>
+                </button>
+                <button class="er-ask-copy-btn" id="erAskCopyJsonBtn" title="Copy as JSON">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  <span id="erAskCopyJsonLabel">Copy JSON</span>
                 </button>
                 <a class="er-ask-cliq-btn" href="https://cliq.zoho.in" target="_blank" rel="noopener noreferrer" title="Open Zoho Cliq">
                   <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">

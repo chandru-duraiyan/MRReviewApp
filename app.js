@@ -1032,10 +1032,12 @@ function initErAskPanel() {
   const panel      = $('erAskPanel');
   const closeBtn   = $('closeErAskPanel');
   const bubble     = $('erAskBubble');
-  const copyBtn    = $('erAskCopyBtn');
-  const copyLabel  = $('erAskCopyLabel');
-  const flavours   = $('erAskFlavours');
-  const salutEl    = $('erAskSalutations');
+  const copyBtn        = $('erAskCopyBtn');
+  const copyLabel      = $('erAskCopyLabel');
+  const copyJsonBtn    = $('erAskCopyJsonBtn');
+  const copyJsonLabel  = $('erAskCopyJsonLabel');
+  const flavours       = $('erAskFlavours');
+  const salutEl        = $('erAskSalutations');
 
   const templates = (typeof ASK_MESSAGES !== 'undefined' && ASK_MESSAGES.length)
     ? ASK_MESSAGES
@@ -1144,6 +1146,44 @@ function initErAskPanel() {
     navigator.clipboard.writeText(getCopyText()).then(() => {
       copyLabel.textContent = 'Copied!';
       setTimeout(() => { copyLabel.textContent = 'Copy message'; }, 2000);
+    });
+  });
+
+  // Returns only the text-node content of the bubble, omitting the MR link anchor.
+  // Used for the JSON `message` field so the link isn't duplicated (it goes in `mr_link`).
+  function getMessageText() {
+    let text = '';
+    for (const node of bubble.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) text += node.textContent;
+    }
+    return text.trim();
+  }
+
+  copyJsonBtn.addEventListener('click', () => {
+    const minReviewers = computeMinReviewers(
+      _erState.sections,
+      _erState.alreadyReviewed,
+      _erState.excluded
+    );
+
+    const mrTitle = _mrCtx.iid
+      ? `MR !${_mrCtx.iid}${_mrCtx.title ? ' \u2014 ' + _mrCtx.title : ''}`
+      : '';
+
+    const payload = {
+      data: [
+        {
+          not_reviewed_by: minReviewers.map(r => r.username),
+          message:         getMessageText(),
+          mr_title:        mrTitle,
+          mr_link:         _mrCtx.url || '',
+        }
+      ]
+    };
+
+    navigator.clipboard.writeText(JSON.stringify(payload, null, 4)).then(() => {
+      copyJsonLabel.textContent = 'Copied!';
+      setTimeout(() => { copyJsonLabel.textContent = 'Copy JSON'; }, 2000);
     });
   });
 }

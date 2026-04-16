@@ -283,6 +283,23 @@ header {
   line-height: 1.6;
 }
 .htu-step-desc strong { color: var(--text); font-weight: 600; }
+.htu-step-list {
+  margin: 6px 0 0 0;
+  padding-left: 18px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.htu-step-list li { margin-bottom: 2px; }
+.htu-step-list code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.76rem;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 0 4px;
+  color: var(--accent);
+}
 .htu-step-desc code {
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 0.76rem;
