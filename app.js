@@ -508,21 +508,22 @@ const _erState = {
   sections:        null,
   alreadyReviewed: new Set(),
   excluded:        new Set(),
+  includeBackup:   false,
 };
 
 function _recomputeEnoughReviewers() {
-  const reviewers = computeMinReviewers(_erState.sections, _erState.alreadyReviewed, _erState.excluded);
+  const reviewers = computeMinReviewers(_erState.sections, _erState.alreadyReviewed, _erState.excluded, _erState.includeBackup);
   renderEnoughReviewers(reviewers);
   renderRemovedReviewers();
 }
 
 /**
- * Greedy set-cover: find the minimum list of reviewers (primary + backup)
- * that covers every file in "Needs Approval" sections.
+ * Greedy set-cover: find the minimum list of reviewers that covers every
+ * file in "Needs Approval" sections.
  *
  * Rules:
  *  1. Only consider sections whose meta is "Needs Approval" (orange).
- *  2. Each file's eligible pool = primary reviewers ∪ backup reviewers.
+ *  2. Each file's eligible pool = primary reviewers (+ backup if includeBackup).
  *  3. Iterate files in order. If any already-selected reviewer is in this
  *     file's pool → file is covered, skip it.
  *  4. Otherwise pick the reviewer (from the pool) who covers the most
@@ -530,19 +531,20 @@ function _recomputeEnoughReviewers() {
  *
  * Returns an array of { username, role, isSpecial } objects.
  */
-function computeMinReviewers(sections, alreadyReviewed = new Set(), excluded = new Set()) {
+function computeMinReviewers(sections, alreadyReviewed = new Set(), excluded = new Set(), includeBackup = false) {
   const pending = sections.filter(s => getSectionMeta(s.title).color === 'orange');
 
-  // Flatten: each element is the combined pool (primary + backup usernames).
+  // Flatten: each element is the eligible pool (primary only, or primary + backup).
   // - Skip files already covered by someone in the alreadyReviewed set.
   // - Exclude manually-removed reviewers from every pool.
   const files = [];
   for (const section of pending) {
     for (const entry of section.entries) {
-      const pool = [
-        ...entry.primary.filter(r => !r.username.includes('`') && !excluded.has(r.username)).map(r => r.username),
-        ...entry.backup.filter(r => !r.username.includes('`') && !excluded.has(r.username)).map(r => r.username),
-      ];
+      const primary = entry.primary.filter(r => !r.username.includes('`') && !excluded.has(r.username)).map(r => r.username);
+      const backup  = includeBackup
+        ? entry.backup.filter(r => !r.username.includes('`') && !excluded.has(r.username)).map(r => r.username)
+        : [];
+      const pool = [...primary, ...backup];
       if (pool.length === 0) continue;
       if (pool.some(u => alreadyReviewed.has(u))) continue; // already covered
       files.push(pool);
@@ -587,11 +589,12 @@ function computeMinReviewers(sections, alreadyReviewed = new Set(), excluded = n
     }
   }
 
-  // Resolve full reviewer objects from sections (primary first, then backup)
+  // Resolve full reviewer objects from sections
   const byUsername = new Map();
   for (const section of pending) {
     for (const entry of section.entries) {
-      for (const r of [...entry.primary, ...entry.backup]) {
+      const all = includeBackup ? [...entry.primary, ...entry.backup] : [...entry.primary];
+      for (const r of all) {
         if (!r.username.includes('`') && !byUsername.has(r.username)) byUsername.set(r.username, r);
       }
     }
@@ -610,10 +613,11 @@ function canRemoveReviewer(username) {
   const pending = _erState.sections.filter(s => getSectionMeta(s.title).color === 'orange');
   for (const section of pending) {
     for (const entry of section.entries) {
-      const fullPool = [
-        ...entry.primary.filter(r => !r.username.includes('`')).map(r => r.username),
-        ...entry.backup.filter(r => !r.username.includes('`')).map(r => r.username),
-      ];
+      const primary = entry.primary.filter(r => !r.username.includes('`')).map(r => r.username);
+      const backup  = _erState.includeBackup
+        ? entry.backup.filter(r => !r.username.includes('`')).map(r => r.username)
+        : [];
+      const fullPool = [...primary, ...backup];
       // File is already covered by someone who reviewed — skip
       if (fullPool.some(u => _erState.alreadyReviewed.has(u))) continue;
       // Check if any eligible reviewer remains after exclusion
@@ -968,6 +972,9 @@ async function handleSubmit(e) {
 
   // Reset state for the new fetch
   _erState.excluded.clear();
+  _erState.includeBackup = false;
+  const backupToggle = $('erIncludeBackupToggle');
+  if (backupToggle) backupToggle.checked = false;
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
   $('erAskBtn').classList.remove('active');
@@ -1189,7 +1196,8 @@ function initErAskPanel() {
     const minReviewers = computeMinReviewers(
       _erState.sections,
       _erState.alreadyReviewed,
-      _erState.excluded
+      _erState.excluded,
+      _erState.includeBackup
     );
 
     const mrTitle = _mrCtx.iid
@@ -1436,6 +1444,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Ask Review panel
   initErAskPanel();
+
+  // Backup reviewers toggle
+  $('erIncludeBackupToggle').addEventListener('change', (e) => {
+    _erState.includeBackup = e.target.checked;
+    _erState.excluded.clear();
+    _recomputeEnoughReviewers();
+  });
 
   // How to Use panel
   function openHowTo()  { showElement('howToPanel');  $('howToUseBtn').classList.add('active'); }
