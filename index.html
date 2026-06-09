@@ -67,6 +67,16 @@
                 <div class="htu-step">
                   <span class="htu-step-num">3</span>
                   <div>
+                    <div class="htu-step-title">Run Gunther</div>
+                    <p class="htu-step-desc">Click <strong>Run Gunther</strong> to manually post <code>@gunther pendingreview</code>
+                      on the MR, wait 12 seconds for the bot to generate the assignment, then automatically fetch and
+                      display the latest reviewers. Use this when you want to force a fresh assignment regardless of
+                      any existing review comment.</p>
+                  </div>
+                </div>
+                <div class="htu-step">
+                  <span class="htu-step-num">4</span>
+                  <div>
                     <div class="htu-step-title">Auto-trigger Review Assignment</div>
                     <p class="htu-step-desc">If the latest comment doesn't contain reviewer details, the app
                       automatically posts <code>@gunther pendingreview</code> and waits 12 seconds for the bot to
@@ -74,7 +84,7 @@
                   </div>
                 </div>
                 <div class="htu-step">
-                  <span class="htu-step-num">4</span>
+                  <span class="htu-step-num">5</span>
                   <div>
                     <div class="htu-step-title">Already Reviewed</div>
                     <p class="htu-step-desc">Reviewers who gave a 👍 reaction directly on the MR appear here. They are
@@ -82,7 +92,7 @@
                   </div>
                 </div>
                 <div class="htu-step">
-                  <span class="htu-step-num">5</span>
+                  <span class="htu-step-num">6</span>
                   <div>
                     <div class="htu-step-title">Enough Reviewers</div>
                     <p class="htu-step-desc">The minimum set of reviewers needed to cover every pending file, computed
@@ -91,7 +101,7 @@
                   </div>
                 </div>
                 <div class="htu-step">
-                  <span class="htu-step-num">6</span>
+                  <span class="htu-step-num">7</span>
                   <div>
                     <div class="htu-step-title">Removed from Consideration</div>
                     <p class="htu-step-desc">Reviewers you exclude via <strong>✕</strong> appear in a separate
@@ -101,7 +111,7 @@
                   </div>
                 </div>
                 <div class="htu-step">
-                  <span class="htu-step-num">7</span>
+                  <span class="htu-step-num">8</span>
                   <div>
                     <div class="htu-step-title">Ask for Review</div>
                     <p class="htu-step-desc">Click the <strong>chat icon</strong> in the Enough Reviewers header to open
@@ -111,7 +121,7 @@
                   </div>
                 </div>
                 <div class="htu-step">
-                  <span class="htu-step-num">8</span>
+                  <span class="htu-step-num">9</span>
                   <div>
                     <div class="htu-step-title">Copy JSON</div>
                     <p class="htu-step-desc">Click <strong>Copy JSON</strong> in the Ask for Review panel to copy a
@@ -127,7 +137,7 @@
                   </div>
                 </div>
                 <div class="htu-step">
-                  <span class="htu-step-num">9</span>
+                  <span class="htu-step-num">10</span>
                   <div>
                     <div class="htu-step-title">Review Comment</div>
                     <p class="htu-step-desc">The latest comment is parsed into file sections — <strong>Needs
@@ -290,6 +300,13 @@
               </svg>
               Fetch
             </button>
+            <button type="button" class="btn-secondary" id="runGuntherBtn" title="Post @gunther pendingreview and fetch reviewers">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              Run Gunther
+            </button>
           </div>
         </form>
       </section>
@@ -449,6 +466,25 @@
               <div class="er-removed-chips" id="erRemovedChips"></div>
             </div>
           </div>
+        </div>
+
+        <!-- New JAVA Packages — blocking notice (below Enough Reviewers) -->
+        <div class="er-new-packages hidden" id="erNewPackages">
+          <div class="er-new-packages-header" id="erNewPackagesToggle" role="button" tabindex="0" aria-expanded="false">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/>
+            </svg>
+            <span class="er-new-packages-title">New JAVA Packages Present</span>
+            <div class="er-np-header-right">
+              <span class="er-np-badge">Blocking</span>
+              <svg class="er-np-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+          <div class="er-new-packages-list" id="erNewPackagesList"></div>
         </div>
 
         <div class="results-header">
