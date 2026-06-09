@@ -28,6 +28,13 @@ const COLOR_PRESETS = [
 
 let _currentAccent = 'orange';
 
+function applyCardGradient(enabled, save = true) {
+  document.documentElement.classList.toggle('no-card-gradient', !enabled);
+  const input = document.getElementById('cardGradientToggle');
+  if (input) input.checked = enabled;
+  if (save) localStorage.setItem('mrreview-card-gradient', enabled ? '1' : '0');
+}
+
 function applyAccentColor(presetId, save = true) {
   const preset = COLOR_PRESETS.find(p => p.id === presetId) || COLOR_PRESETS[0];
   _currentAccent = preset.id;
@@ -1040,8 +1047,7 @@ async function handleSubmit(e) {
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
   hideElement('erNewPackages');
-  $('erNewPackages').classList.remove('er-new-packages--open');
-  $('erNewPackagesToggle').setAttribute('aria-expanded', 'false');
+
   $('erAskBtn').classList.remove('active');
   $('erAskBubble').innerHTML = '';
 
@@ -1129,8 +1135,7 @@ async function handleRunGunther() {
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
   hideElement('erNewPackages');
-  $('erNewPackages').classList.remove('er-new-packages--open');
-  $('erNewPackagesToggle').setAttribute('aria-expanded', 'false');
+
   $('erAskBtn').classList.remove('active');
   $('erAskBubble').innerHTML = '';
 
@@ -1513,15 +1518,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run Gunther button
   $('runGuntherBtn').addEventListener('click', handleRunGunther);
 
-  // New JAVA Packages toggle
-  const npToggle = $('erNewPackagesToggle');
-  function toggleNewPackages() {
-    const wrap = $('erNewPackages');
-    const isOpen = wrap.classList.toggle('er-new-packages--open');
-    npToggle.setAttribute('aria-expanded', String(isOpen));
-  }
-  npToggle.addEventListener('click', toggleNewPackages);
-  npToggle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleNewPackages(); } });
 
   // Theme toggle
   function applyTheme(theme) {
@@ -1533,13 +1529,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const savedTheme = localStorage.getItem('mrreview-theme');
-  if (savedTheme === 'light') applyTheme('light');
+  if (savedTheme === 'dark') applyTheme('dark');
+  else applyTheme('light');
 
   // Accent colour — load, render swatches, apply
   const savedAccent = localStorage.getItem('mrreview-accent') || 'orange';
   _currentAccent = savedAccent;
   renderThemeSwatches();
   applyAccentColor(savedAccent, false);
+
+  // Card gradient — load and apply (default: enabled)
+  const savedGradient = localStorage.getItem('mrreview-card-gradient');
+  applyCardGradient(savedGradient !== '0', false);
+  $('cardGradientToggle').addEventListener('change', e => applyCardGradient(e.target.checked));
 
   $('themeBtn').addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
@@ -276,6 +276,24 @@
           <div class="theme-swatches" id="themeSwatches"></div>
         </div>
 
+        <!-- Card Gradient -->
+        <div class="theme-section">
+          <div class="theme-section-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18M9 21V9"/>
+            </svg>
+            Card Gradient
+          </div>
+          <label class="er-backup-toggle">
+            <input type="checkbox" id="cardGradientToggle" checked />
+            <span class="er-backup-toggle-track">
+              <span class="er-backup-toggle-thumb"></span>
+            </span>
+            <span class="er-backup-toggle-label">Enabled</span>
+          </label>
+        </div>
+
       </div>
     </aside>
 
@@ -468,23 +486,24 @@
           </div>
         </div>
 
-        <!-- New JAVA Packages — blocking notice (below Enough Reviewers) -->
+        <!-- New JAVA Packages (below Enough Reviewers) -->
         <div class="er-new-packages hidden" id="erNewPackages">
-          <div class="er-new-packages-header" id="erNewPackagesToggle" role="button" tabindex="0" aria-expanded="false">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/>
-            </svg>
-            <span class="er-new-packages-title">New JAVA Packages Present</span>
-            <div class="er-np-header-right">
-              <span class="er-np-badge">Blocking</span>
-              <svg class="er-np-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
+          <div class="er-header">
+            <div class="er-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/>
               </svg>
+              New JAVA Packages Present
+            </div>
+            <div class="er-header-actions">
+              <span class="er-np-badge">Blocking</span>
             </div>
           </div>
-          <div class="er-new-packages-list" id="erNewPackagesList"></div>
+          <div class="er-body">
+            <div class="er-new-packages-list" id="erNewPackagesList"></div>
+          </div>
         </div>
 
         <div class="results-header">
