@@ -1040,6 +1040,74 @@ async function handleSubmit(e) {
   }
 }
 
+// ─── Run Gunther Handler ──────────────────────────────────────────────────────
+
+async function handleRunGunther() {
+  const baseUrl     = $('gitlabUrl').value.trim();
+  const projectPath = $('projectPath').value.trim();
+  const mrIid       = $('mrIid').value.trim();
+  const token       = $('accessToken').value.trim();
+
+  if (!baseUrl || !projectPath || !mrIid || !token) return;
+
+  const btn       = $('runGuntherBtn');
+  const submitBtn = $('submitBtn');
+  btn.disabled       = true;
+  submitBtn.disabled = true;
+
+  // Reset state
+  _erState.excluded.clear();
+  _erState.includeBackup = false;
+  const backupToggle = $('erIncludeBackupToggle');
+  if (backupToggle) backupToggle.checked = false;
+  _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
+  hideElement('erAskPanel');
+  $('erAskBtn').classList.remove('active');
+  $('erAskBubble').innerHTML = '';
+
+  showLoading();
+
+  try {
+    setLoadingMsg('Posting @gunther pendingreview…');
+    const [mrInfo, mrReactions] = await Promise.all([
+      getMRInfo(baseUrl, token, projectPath, mrIid),
+      getMRReactions(baseUrl, token, projectPath, mrIid),
+    ]);
+
+    try {
+      await postNote(baseUrl, token, projectPath, mrIid, '@gunther pendingreview');
+    } catch (triggerErr) {
+      console.warn('[MR Review] Could not post trigger comment:', triggerErr);
+    }
+
+    await countdownWait(12);
+
+    const { reviewNote } = await getLatestNote(baseUrl, token, projectPath, mrIid);
+
+    if (!reviewNote) {
+      hideElement('alreadyReviewed');
+      renderEmpty(mrInfo);
+      return;
+    }
+
+    const reactions = await getNoteReactions(baseUrl, token, projectPath, mrIid, reviewNote.id);
+    renderAlreadyReviewed(mrReactions);
+    renderComment(reviewNote, reactions, mrInfo, { mrIid }, mrReactions);
+
+  } catch (err) {
+    const msg = err.message || 'An unexpected error occurred.';
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('CORS')) {
+      showError('Network Error', 'Could not reach the GitLab instance. Check the console for details.');
+    } else {
+      showError('Request Failed', msg);
+    }
+    console.error('[MR Review]', err);
+  } finally {
+    btn.disabled       = false;
+    submitBtn.disabled = false;
+  }
+}
+
 // ─── Ask Review Panel ────────────────────────────────────────────────────────
 
 function initErAskPanel() {
@@ -1372,6 +1440,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Form submit
   $('mrForm').addEventListener('submit', handleSubmit);
+
+  // Run Gunther button
+  $('runGuntherBtn').addEventListener('click', handleRunGunther);
 
   // Theme toggle
   function applyTheme(theme) {

@@ -732,6 +732,39 @@ input.field-empty:focus {
   box-shadow: none;
 }
 
+/* ─── Secondary Button ───────────────────────────────────────────────── */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  height: 42px;
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition),
+              color var(--transition), transform 0.1s;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.btn-secondary:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+.btn-secondary:active  { transform: scale(0.97); }
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* ─── Token Help Panel ───────────────────────────────────────────────── */
 .info-panel {
   background: var(--bg);
