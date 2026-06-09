@@ -1285,8 +1285,9 @@ input.field-empty:focus {
 
 /* ─── Already Reviewed ───────────────────────────────────────────────── */
 .already-reviewed {
-  background: var(--surface);
+  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--surface) 55%);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -1311,7 +1312,8 @@ input.field-empty:focus {
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text);
-  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .ar-title svg { color: var(--blue); flex-shrink: 0; }
@@ -1372,8 +1374,9 @@ input.field-empty:focus {
 
 /* ─── Enough Reviewers ───────────────────────────────────────────────── */
 .enough-reviewers {
-  background: var(--surface);
+  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--surface) 55%);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -1398,7 +1401,8 @@ input.field-empty:focus {
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text);
-  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .er-title svg { color: var(--accent); flex-shrink: 0; }
@@ -1907,86 +1911,67 @@ input.field-empty:focus {
 [data-theme="light"] .er-chip          { color: #059669; border-color: rgba(5,150,105,0.2); }
 [data-theme="light"] .er-chip--special { color: #6d28d9; border-color: rgba(109,40,217,0.2); }
 
-/* ─── New JAVA Packages (blocking) ──────────────────────────────────── */
+/* ─── New JAVA Packages ──────────────────────────────────────────────── */
 .er-new-packages {
-  border: 1.5px solid var(--red-border);
-  background: var(--red-soft);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px 12px;
-  margin-bottom: 12px;
-}
-
-.er-new-packages-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--red);
-  cursor: pointer;
-  user-select: none;
-  margin-bottom: 0;
-}
-
-.er-new-packages-header:focus-visible {
-  outline: 2px solid var(--red-border);
-  outline-offset: 2px;
-  border-radius: var(--radius-xs);
-}
-
-.er-new-packages-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.er-np-header-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--surface) 55%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  animation: fadeSlideUp 0.22s ease;
 }
 
 .er-np-badge {
   font-size: 0.67rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
-  background: var(--red-soft);
-  border: 1px solid var(--red-border);
-  color: var(--red);
+  background: var(--accent);
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.er-np-chevron {
-  transition: transform var(--transition);
-  flex-shrink: 0;
-}
-
-.er-new-packages--open .er-np-chevron {
-  transform: rotate(180deg);
-}
-
 .er-new-packages-list {
-  display: none;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.er-new-packages--open .er-new-packages-list {
   display: flex;
-  margin-top: 14px;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .er-np-path {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-size: 0.77rem;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  color: var(--text-muted);
-  background: var(--surface);
+  color: var(--text-secondary);
+  background: var(--surface-raised);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xs);
-  padding: 3px 8px;
+  padding: 5px 10px;
   word-break: break-all;
+}
+
+.er-np-path::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ─── Card Gradient (disabled state) ────────────────────────────────── */
+html.no-card-gradient .already-reviewed,
+html.no-card-gradient .enough-reviewers,
+html.no-card-gradient .er-new-packages {
+  background: var(--surface);
+  border-left-width: 1px;
+  border-left-color: var(--border);
 }
 
 /* ─── Utility ────────────────────────────────────────────────────────── */

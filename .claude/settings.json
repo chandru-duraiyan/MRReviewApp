@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/chandru-21417/Home/AI/MRReviewApp status)",
+      "Bash(git -C /Users/chandru-21417/Home/AI/MRReviewApp log --oneline -5)",
+      "Bash(git -C /Users/chandru-21417/Home/AI/MRReviewApp push -u origin patch_run_gunther)",
+      "Bash(git -C /Users/chandru-21417/Home/AI/MRReviewApp remote -v)"
+    ]
+  }
+}
