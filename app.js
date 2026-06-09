@@ -362,6 +362,63 @@ function parseReviewerEntry(raw) {
   return { username: stripped, role: null, isSpecial: false };
 }
 
+// ─── New JAVA Packages Parser ─────────────────────────────────────────────────
+
+/**
+ * Detects a "New JAVA Packages" section in the comment body and returns
+ * { description, paths } or null if not present.
+ */
+function parseNewJavaPackages(body) {
+  if (!body || !/New JAVA Packages/i.test(body)) return null;
+
+  const lines = body.split('\n').map(l => l.trim());
+  const idx = lines.findIndex(l => /New JAVA Packages/i.test(l));
+  if (idx === -1) return null;
+
+  // Strip bold markers and extract description after the keyword
+  const headerLine = lines[idx].replace(/\*\*/g, '');
+  const afterKeyword = headerLine.replace(/New JAVA Packages\s*/i, '').trim();
+  // Strip a single outermost bracket/paren pair if present
+  const description = afterKeyword.replace(/^[\[\(](.+?)[\]\)]\s*$/, '$1').trim() || afterKeyword;
+
+  // Collect path-like lines that follow the header; stop at the next section.
+  // Exclude lines containing HTML tags (e.g. </strong>) — they're not paths.
+  const paths = [];
+  for (let i = idx + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) continue;
+    if (/^\*\*[^*]/.test(line) || /^#{1,6}\s/.test(line)) break;
+    if (line.includes('/') && !/</.test(line)) {
+      paths.push(line.replace(/^[*\-\s]+/, ''));
+    }
+  }
+
+  return { description, paths };
+}
+
+function renderNewJavaPackages() {
+  const pkg = _erState.newJavaPackages;
+  if (!pkg) {
+    hideElement('erNewPackages');
+    return;
+  }
+
+  const list = $('erNewPackagesList');
+  list.innerHTML = '';
+  for (const path of pkg.paths) {
+    const row = document.createElement('div');
+    row.className = 'er-np-path';
+    row.textContent = path;
+    list.appendChild(row);
+  }
+
+  if (pkg.paths.length > 0) {
+    showElement('erNewPackages');
+  } else {
+    hideElement('erNewPackages');
+  }
+}
+
 // ─── Review Comment Renderer ──────────────────────────────────────────────────
 
 function getSectionMeta(title) {
@@ -509,6 +566,7 @@ const _erState = {
   alreadyReviewed: new Set(),
   excluded:        new Set(),
   includeBackup:   false,
+  newJavaPackages: null,
 };
 
 function _recomputeEnoughReviewers() {
@@ -865,11 +923,14 @@ function renderComment(note, reactions, mrInfo, { mrIid }, mrReactions = []) {
     bodyEl.appendChild(renderReviewBody(sections));
     _erState.sections        = sections;
     _erState.alreadyReviewed = alreadyReviewed;
+    _erState.newJavaPackages = parseNewJavaPackages(note.body);
     _recomputeEnoughReviewers();
+    renderNewJavaPackages();
   } else {
     bodyEl.classList.remove('review-body-container');
     bodyEl.textContent = note.body || '';
     hideElement('enoughReviewers');
+    hideElement('erNewPackages');
   }
 
   // Reactions
@@ -973,10 +1034,14 @@ async function handleSubmit(e) {
   // Reset state for the new fetch
   _erState.excluded.clear();
   _erState.includeBackup = false;
+  _erState.newJavaPackages = null;
   const backupToggle = $('erIncludeBackupToggle');
   if (backupToggle) backupToggle.checked = false;
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
+  hideElement('erNewPackages');
+  $('erNewPackages').classList.remove('er-new-packages--open');
+  $('erNewPackagesToggle').setAttribute('aria-expanded', 'false');
   $('erAskBtn').classList.remove('active');
   $('erAskBubble').innerHTML = '';
 
@@ -1058,10 +1123,14 @@ async function handleRunGunther() {
   // Reset state
   _erState.excluded.clear();
   _erState.includeBackup = false;
+  _erState.newJavaPackages = null;
   const backupToggle = $('erIncludeBackupToggle');
   if (backupToggle) backupToggle.checked = false;
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
+  hideElement('erNewPackages');
+  $('erNewPackages').classList.remove('er-new-packages--open');
+  $('erNewPackagesToggle').setAttribute('aria-expanded', 'false');
   $('erAskBtn').classList.remove('active');
   $('erAskBubble').innerHTML = '';
 
@@ -1443,6 +1512,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Run Gunther button
   $('runGuntherBtn').addEventListener('click', handleRunGunther);
+
+  // New JAVA Packages toggle
+  const npToggle = $('erNewPackagesToggle');
+  function toggleNewPackages() {
+    const wrap = $('erNewPackages');
+    const isOpen = wrap.classList.toggle('er-new-packages--open');
+    npToggle.setAttribute('aria-expanded', String(isOpen));
+  }
+  npToggle.addEventListener('click', toggleNewPackages);
+  npToggle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleNewPackages(); } });
 
   // Theme toggle
   function applyTheme(theme) {
