@@ -1974,6 +1974,39 @@ html.no-card-gradient .er-new-packages {
   border-left-color: var(--border);
 }
 
+/* ─── Toast Notification ─────────────────────────────────────────────── */
+.toast-notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 12px 16px;
+  margin-bottom: 20px;
+  border-radius: var(--radius);
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid var(--red-border);
+  font-size: 0.83rem;
+  animation: fadeSlideDown 0.2s ease;
+}
+
+.toast-notification svg { flex-shrink: 0; }
+
+.toast-notification span { flex: 1; line-height: 1.4; }
+
+.toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--red);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+.toast-close:hover { opacity: 1; }
+
 /* ─── Utility ────────────────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
