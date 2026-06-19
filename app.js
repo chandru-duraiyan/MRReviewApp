@@ -149,7 +149,9 @@ async function postNote(baseUrl, token, projectPath, mrIid, body) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Failed to post comment (${res.status})`);
+    const error = new Error(err.message || err.error_description || err.error || `Failed to post comment (${res.status})`);
+    error.code = err.error;
+    throw error;
   }
   return res.json();
 }
@@ -713,6 +715,14 @@ function showErError(msg) {
   _erErrorTimer = setTimeout(() => hideElement('erError'), 3500);
 }
 
+let _toastTimer = null;
+function showToastError(msg) {
+  $('toastMessage').textContent = msg;
+  showElement('toastNotification');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => hideElement('toastNotification'), 7000);
+}
+
 function renderEnoughReviewers(reviewers) {
   // Keep card visible if there are removed reviewers to show
   if ((!reviewers || reviewers.length === 0) && _erState.excluded.size === 0) {
@@ -1139,20 +1149,30 @@ async function handleRunGunther() {
   $('erAskBtn').classList.remove('active');
   $('erAskBubble').innerHTML = '';
 
+  const hadResults = !$('results').classList.contains('hidden');
+
   showLoading();
 
   try {
+    // Check scope first — if the token can't post, abort before the countdown
     setLoadingMsg('Posting @gunther pendingreview…');
+    try {
+      await postNote(baseUrl, token, projectPath, mrIid, '@gunther pendingreview');
+    } catch (triggerErr) {
+      if (triggerErr.code === 'insufficient_scope' || (triggerErr.message || '').includes('insufficient_scope')) {
+        hideElement('loading');
+        if (hadResults) showElement('results');
+        showToastError('Access token lacks sufficient scope to post comments. @gunther was not triggered. Please use a token with "api" scope.');
+        return;
+      }
+      console.warn('[MR Review] Could not post trigger comment:', triggerErr);
+    }
+
+    setLoadingMsg('Waiting for review assignment…');
     const [mrInfo, mrReactions] = await Promise.all([
       getMRInfo(baseUrl, token, projectPath, mrIid),
       getMRReactions(baseUrl, token, projectPath, mrIid),
     ]);
-
-    try {
-      await postNote(baseUrl, token, projectPath, mrIid, '@gunther pendingreview');
-    } catch (triggerErr) {
-      console.warn('[MR Review] Could not post trigger comment:', triggerErr);
-    }
 
     await countdownWait(12);
 
@@ -1517,6 +1537,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Run Gunther button
   $('runGuntherBtn').addEventListener('click', handleRunGunther);
+
+  // Toast close button
+  $('toastClose').addEventListener('click', () => {
+    clearTimeout(_toastTimer);
+    hideElement('toastNotification');
+  });
 
 
   // Theme toggle
