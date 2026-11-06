@@ -1486,7 +1486,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apply defaults: config.js takes priority for accessToken and gitUsername;
   // fall back to localStorage when config has no value.
   if (typeof CONFIG !== 'undefined') {
-    if (CONFIG.gitlabUrl)   $('gitlabUrl').value   = CONFIG.gitlabUrl;
+    // GitLab URL — a cached (user-edited) value wins; config.js is the default
+    const resolvedUrl = localStorage.getItem('mrreview-gitlabUrl') || CONFIG.gitlabUrl;
+    if (resolvedUrl) $('gitlabUrl').value = resolvedUrl;
     if (CONFIG.projectPath) $('projectPath').value = CONFIG.projectPath;
 
     // Access token — config.js wins if set, otherwise restore from localStorage
@@ -1506,7 +1508,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Persist accessToken and gitUsername edits to localStorage
+  // Persist gitlabUrl, accessToken and gitUsername edits to localStorage
+  $('gitlabUrl').addEventListener('input', () => {
+    localStorage.setItem('mrreview-gitlabUrl', $('gitlabUrl').value.trim());
+  });
   $('accessToken').addEventListener('input', () => {
     localStorage.setItem('mrreview-accessToken', $('accessToken').value.trim());
   });
