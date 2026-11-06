@@ -863,6 +863,7 @@ function showLoading() {
   hideElement('errorCard');
   hideElement('results');
   showElement('loading');
+  startLoadingUi();
 }
 
 function renderComment(note, reactions, mrInfo, { mrIid }, mrReactions = []) {
@@ -1010,8 +1011,122 @@ function renderEmpty(mrInfo, reason = 'no-comments') {
   showElement('results');
 }
 
-function setLoadingMsg(main, detail) {
-  $('loadingMsg').textContent = main;
+// Loading screen steps: 0 Fetch MR · 1 Ping Gunther · 2 Wait · 3 Read reviewers
+const LOADING_TIPS = [
+  'Tip: click the ✕ on a reviewer chip to drop them and recompute.',
+  'Tip: turn on +Backup to widen the reviewer pool.',
+  'Tip: Copy JSON works with Cliq\'s /zfpackagereview command.',
+  'Tip: your GitLab URL and token are remembered between visits.',
+  'Tip: click the orb — it likes attention.',
+  'Fun fact: finding the minimum reviewer set is a set-cover problem.',
+];
+const LOADING_STEP_COUNT = 4;
+const _ld = { timer: null, start: 0, tick: 0, tip: 0, step: 0, pokes: 0, turboTimer: null };
+
+function setLoadingStep(step) {
+  _ld.step = step;
+  document.querySelectorAll('#ldSteps .ld-step').forEach((li, i) => {
+    li.classList.toggle('is-done',   i < step);
+    li.classList.toggle('is-active', i === step);
+  });
+  $('ldBarFill').style.width = `${Math.round(((step + 0.5) / LOADING_STEP_COUNT) * 100)}%`;
+}
+
+function showLoadingTip(text) {
+  const el = $('ldTip');
+  el.classList.add('is-fading');
+  setTimeout(() => {
+    el.textContent = text ?? LOADING_TIPS[_ld.tip];
+    el.classList.remove('is-fading');
+  }, 250);
+}
+
+function nextLoadingTip() {
+  _ld.tip = (_ld.tip + 1) % LOADING_TIPS.length;
+  showLoadingTip();
+}
+
+function startLoadingUi() {
+  clearInterval(_ld.timer);
+  _ld.start = Date.now();
+  _ld.tick  = 0;
+  _ld.pokes = 0;
+  _ld.tip   = Math.floor(Math.random() * LOADING_TIPS.length);
+  $('ldElapsed').textContent = '0s';
+  $('ldTip').textContent = LOADING_TIPS[_ld.tip];
+  setLoadingStep(0);
+
+  _ld.timer = setInterval(() => {
+    // Self-stop once the loading screen is hidden
+    if ($('loading').classList.contains('hidden')) {
+      clearInterval(_ld.timer);
+      return;
+    }
+    _ld.tick++;
+    $('ldElapsed').textContent = `${Math.floor((Date.now() - _ld.start) / 1000)}s`;
+    if (_ld.tick % 5 === 0) nextLoadingTip();
+  }, 1000);
+}
+
+function pokeLoadingOrb() {
+  const orb = $('ldOrb');
+  const colors = ['var(--accent)', 'var(--blue)', 'var(--purple)', 'var(--green)', 'var(--yellow)'];
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+    const dist  = 50 + Math.random() * 40;
+    const spark = document.createElement('span');
+    spark.className = 'ld-spark';
+    spark.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+    spark.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+    spark.style.setProperty('--spark', colors[i % colors.length]);
+    spark.addEventListener('animationend', () => spark.remove());
+    orb.appendChild(spark);
+  }
+
+  // Speed the rings up for a moment
+  orb.classList.add('is-turbo');
+  clearTimeout(_ld.turboTimer);
+  _ld.turboTimer = setTimeout(() => orb.classList.remove('is-turbo'), 1400);
+
+  _ld.pokes++;
+  if (_ld.pokes === 5)       showLoadingTip('Easy there! Gunther is working as fast as it can 🤖');
+  else if (_ld.pokes === 12) showLoadingTip('You found the secret: nothing happens at 12 pokes 😄');
+}
+
+function initLoadingUi() {
+  const card = $('ldCard');
+  const orb  = $('ldOrb');
+
+  // Orb tilts toward the cursor
+  card.addEventListener('pointermove', (e) => {
+    const o  = orb.getBoundingClientRect();
+    const dx = e.clientX - (o.left + o.width / 2);
+    const dy = e.clientY - (o.top + o.height / 2);
+    const d  = Math.hypot(dx, dy) || 1;
+    const pull = Math.min(d / 12, 8);
+    orb.style.setProperty('--tx', `${(dx / d) * pull}px`);
+    orb.style.setProperty('--ty', `${(dy / d) * pull}px`);
+  });
+  card.addEventListener('pointerleave', () => {
+    orb.style.setProperty('--tx', '0px');
+    orb.style.setProperty('--ty', '0px');
+  });
+
+  orb.addEventListener('click', pokeLoadingOrb);
+  $('ldTip').addEventListener('click', nextLoadingTip);
+}
+
+function setLoadingMsg(main, detail, step) {
+  const msgEl = $('loadingMsg');
+  if (msgEl.textContent !== main) {
+    msgEl.textContent = main;
+    const box = msgEl.parentElement;
+    box.classList.remove('ld-swap');
+    void box.offsetWidth; // restart the animation
+    box.classList.add('ld-swap');
+  }
+  if (step !== undefined) setLoadingStep(step);
   const detailEl = $('loadingDetail');
   if (detail !== undefined) {
     detailEl.textContent = detail;
@@ -1029,11 +1144,12 @@ async function countdownWait(seconds) {
   for (let i = seconds; i > 0; i--) {
     setLoadingMsg(
       'Waiting for review assignment…',
-      `@gunther is generating reviewer details — ${i}s`
+      `@gunther is generating reviewer details — ${i}s`,
+      2
     );
     await sleep(1000);
   }
-  setLoadingMsg('Fetching review assignment…');
+  setLoadingMsg('Fetching review assignment…', undefined, 3);
 }
 
 // ─── Main Handler ─────────────────────────────────────────────────────────────
@@ -1067,7 +1183,7 @@ async function handleSubmit(e) {
   showLoading();
 
   try {
-    setLoadingMsg('Fetching MR data…');
+    setLoadingMsg('Fetching MR data…', undefined, 0);
     let [{ reviewNote, latestNote }, mrInfo, mrReactions] = await Promise.all([
       getLatestNote(baseUrl, token, projectPath, mrIid),
       getMRInfo(baseUrl, token, projectPath, mrIid),
@@ -1081,7 +1197,7 @@ async function handleSubmit(e) {
     if (!note) {
       const isNoPendingReview = latestNote && /no pending review/i.test(latestNote.body.trim());
       if (!isNoPendingReview) {
-        setLoadingMsg('No review assignment found — triggering @gunther…');
+        setLoadingMsg('No review assignment found — triggering @gunther…', undefined, 1);
         try {
           await postNote(baseUrl, token, projectPath, mrIid, '@gunther pendingreview');
         } catch (triggerErr) {
@@ -1101,6 +1217,7 @@ async function handleSubmit(e) {
       return;
     }
 
+    setLoadingMsg('Reading reviewer details…', undefined, 3);
     const reactions = await getNoteReactions(baseUrl, token, projectPath, mrIid, note.id);
     renderAlreadyReviewed(mrReactions);
     renderComment(note, reactions, mrInfo, { mrIid }, mrReactions);
@@ -1158,7 +1275,7 @@ async function handleRunGunther() {
 
   try {
     // Check scope first — if the token can't post, abort before the countdown
-    setLoadingMsg('Posting @gunther pendingreview…');
+    setLoadingMsg('Posting @gunther pendingreview…', undefined, 1);
     try {
       await postNote(baseUrl, token, projectPath, mrIid, '@gunther pendingreview');
     } catch (triggerErr) {
@@ -1171,7 +1288,7 @@ async function handleRunGunther() {
       console.warn('[MR Review] Could not post trigger comment:', triggerErr);
     }
 
-    setLoadingMsg('Waiting for review assignment…');
+    setLoadingMsg('Waiting for review assignment…', undefined, 2);
     const [mrInfo, mrReactions] = await Promise.all([
       getMRInfo(baseUrl, token, projectPath, mrIid),
       getMRReactions(baseUrl, token, projectPath, mrIid),
@@ -1187,6 +1304,7 @@ async function handleRunGunther() {
       return;
     }
 
+    setLoadingMsg('Reading reviewer details…', undefined, 3);
     const reactions = await getNoteReactions(baseUrl, token, projectPath, mrIid, reviewNote.id);
     renderAlreadyReviewed(mrReactions);
     renderComment(reviewNote, reactions, mrInfo, { mrIid }, mrReactions);
@@ -1486,6 +1604,7 @@ function initMRDropdown() {
 // ─── Initialisation ───────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+  initLoadingUi();
   // Apply defaults: config.js takes priority for accessToken and gitUsername;
   // fall back to localStorage when config has no value.
   if (typeof CONFIG !== 'undefined') {
