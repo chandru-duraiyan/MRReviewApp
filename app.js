@@ -932,6 +932,9 @@ function renderComment(note, reactions, mrInfo, { mrIid }, mrReactions = []) {
     if (remaining.length === 0) {
       hideElement('enoughReviewers');
       renderEmpty(mrInfo, 'all-reviewed');
+      // New JAVA packages are still blocking even when every approver has approved
+      _erState.newJavaPackages = parseNewJavaPackages(note.body);
+      renderNewJavaPackages();
       return;
     }
 
@@ -1542,6 +1545,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Run Gunther button
   $('runGuntherBtn').addEventListener('click', handleRunGunther);
+
+  // "Run Gunther" link in the New JAVA Packages banner triggers the same button
+  $('erNpRunGuntherLink').addEventListener('click', () => $('runGuntherBtn').click());
 
   // Toast close button
   $('toastClose').addEventListener('click', () => {
