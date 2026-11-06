@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MR Review</title>
-  <link rel="stylesheet" href="style.css?v=loader4" />
+  <link rel="stylesheet" href="style.css?v=teal1" />
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><path d="M14 2L3 10.5L6.5 24H21.5L25 10.5L14 2Z" fill="%23FC6D26" opacity="0.9"/><path d="M14 2L6.5 24H21.5L14 2Z" fill="%23E24329"/><path d="M3 10.5L6.5 24L14 2L3 10.5Z" fill="%23FC6D26"/><path d="M25 10.5L21.5 24L14 2L25 10.5Z" fill="%23FCA326"/></svg>'>
 </head>
 
@@ -276,24 +276,6 @@
           <div class="theme-swatches" id="themeSwatches"></div>
         </div>
 
-        <!-- Card Gradient -->
-        <div class="theme-section">
-          <div class="theme-section-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="M3 9h18M9 21V9"/>
-            </svg>
-            Card Gradient
-          </div>
-          <label class="er-backup-toggle">
-            <input type="checkbox" id="cardGradientToggle" checked />
-            <span class="er-backup-toggle-track">
-              <span class="er-backup-toggle-thumb"></span>
-            </span>
-            <span class="er-backup-toggle-label">Enabled</span>
-          </label>
-        </div>
-
       </div>
     </aside>
 
@@ -400,6 +382,17 @@
 
       <!-- Results Section -->
       <section class="results hidden" id="results">
+
+        <!-- MR title bar -->
+        <a href="#" class="mr-link" id="mrLink" target="_blank" rel="noopener noreferrer" title="Open merge request">
+          <span class="mr-link-iid"></span>
+          <span class="mr-link-text">View MR</span>
+          <svg class="mr-link-open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        </a>
 
         <!-- Already Reviewed -->
         <div class="already-reviewed hidden" id="alreadyReviewed">
@@ -561,14 +554,6 @@
 
         <div class="results-header">
           <h2>Latest Comment</h2>
-          <a href="#" class="mr-link" id="mrLink" target="_blank" rel="noopener noreferrer">
-            View MR
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-          </a>
         </div>
 
         <div class="comment-card" id="commentCard">
@@ -609,9 +594,9 @@
     </main>
   </div>
 
-  <script src="config.js?v=loader4"></script>
-  <script src="ask-messages.js?v=loader4"></script>
-  <script src="app.js?v=loader4"></script>
+  <script src="config.js?v=teal1"></script>
+  <script src="ask-messages.js?v=teal1"></script>
+  <script src="app.js?v=teal1"></script>
 </body>
 
 </html>
