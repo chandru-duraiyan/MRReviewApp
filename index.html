@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MR Review</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=loader4" />
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><path d="M14 2L3 10.5L6.5 24H21.5L25 10.5L14 2Z" fill="%23FC6D26" opacity="0.9"/><path d="M14 2L6.5 24H21.5L14 2Z" fill="%23E24329"/><path d="M3 10.5L6.5 24L14 2L3 10.5Z" fill="%23FC6D26"/><path d="M25 10.5L21.5 24L14 2L25 10.5Z" fill="%23FCA326"/></svg>'>
 </head>
 
@@ -346,11 +346,42 @@
       </section>
 
       <!-- Loading State -->
-      <div class="loading hidden" id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text">
-          <p id="loadingMsg">Fetching MR data…</p>
-          <span id="loadingDetail" class="loading-detail hidden"></span>
+      <div class="loading hidden" id="loading" role="status" aria-live="polite">
+        <div class="ld-card" id="ldCard">
+          <!-- Interactive orb: hover to tilt, click to poke -->
+          <button type="button" class="ld-orb" id="ldOrb" title="Poke me!" aria-label="Poke the loader">
+            <span class="ld-ring ld-ring-1"><i></i></span>
+            <span class="ld-ring ld-ring-2"><i></i></span>
+            <span class="ld-ring ld-ring-3"><i></i></span>
+            <span class="ld-core">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="6" cy="6" r="2.5" />
+                <circle cx="6" cy="18" r="2.5" />
+                <circle cx="18" cy="12" r="2.5" />
+                <path d="M6 8.5v7" />
+                <path d="M8.3 7.2C12 7.8 14 9.5 15.6 11" />
+              </svg>
+            </span>
+          </button>
+
+          <div class="loading-text">
+            <p id="loadingMsg">Fetching MR data…</p>
+            <span id="loadingDetail" class="loading-detail hidden"></span>
+          </div>
+
+          <ol class="ld-steps" id="ldSteps">
+            <li class="ld-step"><span class="ld-dot"></span><span class="ld-step-label">Fetch MR</span></li>
+            <li class="ld-step"><span class="ld-dot"></span><span class="ld-step-label">Ping Gunther</span></li>
+            <li class="ld-step"><span class="ld-dot"></span><span class="ld-step-label">Wait</span></li>
+            <li class="ld-step"><span class="ld-dot"></span><span class="ld-step-label">Read reviewers</span></li>
+          </ol>
+
+          <div class="ld-bar"><span class="ld-bar-fill" id="ldBarFill"></span></div>
+
+          <div class="ld-footer">
+            <button type="button" class="ld-tip" id="ldTip" title="Click for another tip"></button>
+            <span class="ld-elapsed" id="ldElapsed">0s</span>
+          </div>
         </div>
       </div>
 
@@ -578,9 +609,9 @@
     </main>
   </div>
 
-  <script src="config.js"></script>
-  <script src="ask-messages.js"></script>
-  <script src="app.js"></script>
+  <script src="config.js?v=loader4"></script>
+  <script src="ask-messages.js?v=loader4"></script>
+  <script src="app.js?v=loader4"></script>
 </body>
 
 </html>
