@@ -10,7 +10,7 @@ A lightweight, single-page browser app for tracking GitLab Merge Request review 
 - **Minimum reviewer computation** — greedy set-cover algorithm finds the smallest group of reviewers (across primary and backup) that covers every pending file.
 - **Already Reviewed** — reviewers who gave a 👍 reaction directly on the MR are displayed and automatically excluded from the minimum reviewer calculation.
 - **Exclude reviewers** — click ✕ on any reviewer chip to remove them from consideration and recompute instantly. A reviewer cannot be removed if doing so would leave any file with no eligible reviewer.
-- **Ask for Review panel** — pre-fills a customisable review request message with an MR link. Supports multiple message templates (Default, Urgent, Before EOD) and salutation options.
+- **Ask for Review panel** — pre-fills a customisable review request message with an MR link. Supports multiple message templates (Default, Urgent, Before EOD).
 - **Copy JSON** — copies a structured JSON payload of pending reviewers, the request message, MR title, and MR link — ready to paste into Zoho Cliq's `/zfpackagereview` command to auto-send messages to all reviewers.
 - **Credential persistence** — `accessToken` and `gitUsername` are saved to `localStorage`. `config.js` values take priority; user edits in Settings are persisted automatically across page reloads.
 - **MR dropdown** — focus the MR ID field to see a dropdown of your open MRs fetched from GitLab.
@@ -62,26 +62,19 @@ If `accessToken` or `gitUsername` are left empty in `config.js`, the app restore
 
 ## Customising Message Templates
 
-Edit `ask-messages.js` to add or modify the message templates and salutation options shown in the Ask for Review panel.
+Edit `ask-messages.js` to add or modify the message templates shown in the Ask for Review panel.
 
 ```js
 const ASK_MESSAGES = [
   {
     id:    'default',
     label: 'Default',
-    text:  'Hi{salutation}, could you please review this MR when you have a moment? {link}',
+    text:  'Hi, could you please review this MR when you have a moment? {link}',
   },
   // add more templates here
 ];
-
-const ASK_SALUTATIONS = [
-  { id: 'none', label: 'None', value: ''      },
-  { id: 'bro',  label: 'Bro',  value: ' Bro' },
-  // add more salutations here
-];
 ```
 
-- `{salutation}` is replaced with the selected salutation value at runtime.
 - `{link}` is replaced with a clickable MR link.
 
 ---
@@ -121,7 +114,7 @@ The **Copy JSON** button in the Ask for Review panel copies a payload in this fo
 MRReviewApp/
 ├── index.html        # Main UI — layout, settings drawer, results sections
 ├── app.js            # All app logic — GitLab API, reviewer computation, rendering
-├── ask-messages.js   # Message templates and salutation options
+├── ask-messages.js   # Message templates
 ├── config.js         # Default configuration values
 └── style.css         # All styles — theming, components, layout
 ```

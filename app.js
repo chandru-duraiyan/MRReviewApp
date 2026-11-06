@@ -26,7 +26,7 @@ const COLOR_PRESETS = [
     light: { accent: '#db2777', hover: '#be185d', soft: 'rgba(219,39,119,0.1)',   glow: 'rgba(219,39,119,0.2)'  } },
 ];
 
-const DEFAULT_ACCENT = 'teal';
+const DEFAULT_ACCENT = 'orange';
 let _currentAccent = DEFAULT_ACCENT;
 
 function applyAccentColor(presetId, save = true) {
@@ -1320,19 +1320,12 @@ function initErAskPanel() {
   const jsonInfoBtn    = $('erJsonInfoBtn');
   const jsonInfoPanel  = $('erJsonInfoPanel');
   const flavours       = $('erAskFlavours');
-  const salutEl        = $('erAskSalutations');
 
   const templates = (typeof ASK_MESSAGES !== 'undefined' && ASK_MESSAGES.length)
     ? ASK_MESSAGES
-    : [{ id: 'default', label: 'Default', text: 'Hi{salutation}, could you please review this MR when you have a moment? {link}' }];
+    : [{ id: 'default', label: 'Default', text: 'Hi, could you please review this MR when you have a moment? {link}' }];
 
-  // @ts-ignore — ASK_SALUTATIONS is defined in ask-messages.js loaded before this script
-  const salutations = (typeof ASK_SALUTATIONS !== 'undefined' && ASK_SALUTATIONS.length)
-    ? ASK_SALUTATIONS
-    : [{ id: 'none', label: 'None', value: '' }];
-
-  let activeId    = templates[0].id;
-  let activeSalut = salutations[0].id; // default: None
+  let activeId = templates[0].id;
 
   // Populate the contenteditable bubble:
   // text before {link} → editable text node
@@ -1341,10 +1334,8 @@ function initErAskPanel() {
   function populateBubble() {
     const { url, iid, title } = _mrCtx;
     const linkLabel  = iid ? `MR !${iid}${title ? ' — ' + title : ''}` : 'this MR';
-    const salutValue = (salutations.find(s => s.id === activeSalut) || salutations[0]).value;
     const tpl        = templates.find(t => t.id === activeId) || templates[0];
-    const resolved   = tpl.text.replace('{salutation}', salutValue);
-    const parts      = resolved.split('{link}');
+    const parts      = tpl.text.split('{link}');
 
     bubble.innerHTML = '';
     bubble.appendChild(document.createTextNode(parts[0] || ''));
@@ -1403,7 +1394,6 @@ function initErAskPanel() {
 
   function openPanel() {
     renderPills(flavours, templates, () => activeId, id => { activeId = id; });
-    renderPills(salutEl,  salutations, () => activeSalut, id => { activeSalut = id; });
     populateBubble();
     copyLabel.textContent = 'Copy message';
     showElement('erAskPanel');
