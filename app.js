@@ -26,17 +26,11 @@ const COLOR_PRESETS = [
     light: { accent: '#db2777', hover: '#be185d', soft: 'rgba(219,39,119,0.1)',   glow: 'rgba(219,39,119,0.2)'  } },
 ];
 
-let _currentAccent = 'orange';
-
-function applyCardGradient(enabled, save = true) {
-  document.documentElement.classList.toggle('no-card-gradient', !enabled);
-  const input = document.getElementById('cardGradientToggle');
-  if (input) input.checked = enabled;
-  if (save) localStorage.setItem('mrreview-card-gradient', enabled ? '1' : '0');
-}
+const DEFAULT_ACCENT = 'teal';
+let _currentAccent = DEFAULT_ACCENT;
 
 function applyAccentColor(presetId, save = true) {
-  const preset = COLOR_PRESETS.find(p => p.id === presetId) || COLOR_PRESETS[0];
+  const preset = COLOR_PRESETS.find(p => p.id === presetId) || COLOR_PRESETS.find(p => p.id === DEFAULT_ACCENT);
   _currentAccent = preset.id;
 
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
@@ -866,6 +860,15 @@ function showLoading() {
   startLoadingUi();
 }
 
+function setMrLink(mrInfo, mrIid) {
+  if (!mrInfo?.web_url) return;
+  const link = $('mrLink');
+  link.href = mrInfo.web_url;
+  link.querySelector('.mr-link-iid').textContent  = mrIid ? `!${mrIid}` : '';
+  link.querySelector('.mr-link-text').textContent = mrInfo.title || 'View MR';
+  link.title = mrInfo.title ? `Open: ${mrInfo.title}` : 'Open merge request';
+}
+
 function renderComment(note, reactions, mrInfo, { mrIid }, mrReactions = []) {
   _mrCtx.url   = mrInfo?.web_url ?? null;
   _mrCtx.title = mrInfo?.title ?? null;
@@ -875,25 +878,7 @@ function renderComment(note, reactions, mrInfo, { mrIid }, mrReactions = []) {
   hideElement('noComments');
   hideElement('commentCard');
 
-  // MR link
-  if (mrInfo?.web_url) {
-    const link = $('mrLink');
-    link.href = mrInfo.web_url;
-    link.innerHTML = '';
-    const textSpan = document.createElement('span');
-    textSpan.className = 'mr-link-text';
-    textSpan.textContent = `!${mrIid}${mrInfo.title ? ' — ' + mrInfo.title : ''}`;
-    link.appendChild(textSpan);
-    // External link icon
-    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    icon.setAttribute('width', '12'); icon.setAttribute('height', '12');
-    icon.setAttribute('viewBox', '0 0 24 24');
-    icon.setAttribute('fill', 'none');
-    icon.setAttribute('stroke', 'currentColor');
-    icon.setAttribute('stroke-width', '2.5');
-    icon.innerHTML = '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>';
-    link.appendChild(icon);
-  }
+  setMrLink(mrInfo, mrIid);
 
   // Avatar
   const avatar = $('authorAvatar');
@@ -999,9 +984,7 @@ function renderEmpty(mrInfo, reason = 'no-comments') {
   hideElement('errorCard');
   hideElement('commentCard');
 
-  if (mrInfo?.web_url) {
-    $('mrLink').href = mrInfo.web_url;
-  }
+  setMrLink(mrInfo, $('mrIid').value.trim());
 
   $('noComments').querySelector('p').textContent = reason === 'all-reviewed'
     ? 'All reviewers have reviewed this MR. No pending review.'
@@ -1689,15 +1672,10 @@ document.addEventListener('DOMContentLoaded', () => {
   else applyTheme('light');
 
   // Accent colour — load, render swatches, apply
-  const savedAccent = localStorage.getItem('mrreview-accent') || 'orange';
+  const savedAccent = localStorage.getItem('mrreview-accent') || DEFAULT_ACCENT;
   _currentAccent = savedAccent;
   renderThemeSwatches();
   applyAccentColor(savedAccent, false);
-
-  // Card gradient — load and apply (default: enabled)
-  const savedGradient = localStorage.getItem('mrreview-card-gradient');
-  applyCardGradient(savedGradient !== '0', false);
-  $('cardGradientToggle').addEventListener('change', e => applyCardGradient(e.target.checked));
 
   $('themeBtn').addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme');
