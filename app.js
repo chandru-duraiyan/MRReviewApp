@@ -563,12 +563,15 @@ function buildReviewerGroup(label, reviewers, type) {
 // Current MR context — updated each time an MR is loaded.
 const _mrCtx = { url: null, title: null, iid: null };
 
+// Backup reviewers are included by default on every fetch; the user can switch them off.
+const DEFAULT_INCLUDE_BACKUP = true;
+
 // Persistent state for the current fetch — reset on each new submission.
 const _erState = {
   sections:        null,
   alreadyReviewed: new Set(),
   excluded:        new Set(),
-  includeBackup:   false,
+  includeBackup:   DEFAULT_INCLUDE_BACKUP,
   newJavaPackages: null,
 };
 
@@ -914,7 +917,7 @@ function renderComment(note, reactions, mrInfo, { mrIid }, mrReactions = []) {
 
     // If every pending file is already covered by someone who reviewed,
     // there are no reviewers left to assign — treat as "No Pending Review".
-    const remaining = computeMinReviewers(sections, alreadyReviewed, new Set());
+    const remaining = computeMinReviewers(sections, alreadyReviewed, new Set(), _erState.includeBackup);
     if (remaining.length === 0) {
       hideElement('enoughReviewers');
       renderEmpty(mrInfo, 'all-reviewed');
@@ -1152,10 +1155,10 @@ async function handleSubmit(e) {
 
   // Reset state for the new fetch
   _erState.excluded.clear();
-  _erState.includeBackup = false;
+  _erState.includeBackup = DEFAULT_INCLUDE_BACKUP;
   _erState.newJavaPackages = null;
   const backupToggle = $('erIncludeBackupToggle');
-  if (backupToggle) backupToggle.checked = false;
+  if (backupToggle) backupToggle.checked = DEFAULT_INCLUDE_BACKUP;
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
   hideElement('erNewPackages');
@@ -1241,10 +1244,10 @@ async function handleRunGunther() {
 
   // Reset state
   _erState.excluded.clear();
-  _erState.includeBackup = false;
+  _erState.includeBackup = DEFAULT_INCLUDE_BACKUP;
   _erState.newJavaPackages = null;
   const backupToggle = $('erIncludeBackupToggle');
-  if (backupToggle) backupToggle.checked = false;
+  if (backupToggle) backupToggle.checked = DEFAULT_INCLUDE_BACKUP;
   _mrCtx.url = null; _mrCtx.title = null; _mrCtx.iid = null;
   hideElement('erAskPanel');
   hideElement('erNewPackages');
